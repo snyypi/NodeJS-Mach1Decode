@@ -1,3 +1,4 @@
+/* eslint-disable */
 import Mach1DecodeModule from '../lib/Mach1Decode';
 import Mach1DecodeModuleWasm from '../lib/Mach1Decode.wasm';
 
@@ -14,8 +15,20 @@ export class Mach1DecoderProxy {
     if (source) {
       this.#player = source;
     }
-    if (typeof options === 'object' && hasOwnProperty.call(options, 'debug')) {
-      this.#debug.enable = options.debug;
+    if (typeof options === 'object') {
+      if (hasOwnProperty.call(options, 'debug')) {
+        this.#debug.enable = options.debug;
+      }
+      if (hasOwnProperty.call(options, 'locateFile')) {
+        const { locateFile } = options;
+        switch (typeof locateFile) {
+          case 'function':
+            Mach1DecodeModule.locateFile = locateFile;
+            break;
+          default:
+            throw new Error('"locateFile" argument must be a function');
+        }
+      }
     }
 
     new Mach1DecodeModule()
@@ -23,7 +36,7 @@ export class Mach1DecoderProxy {
         this.#module = new m1DecodeModule.Mach1Decode();
 
         this.#module.setPlatformType(this.#module.Mach1PlatformType.Mach1PlatformDefault);
-        this.#module.setDecodeAlgoType(this.#module.Mach1DecodeAlgoType.Mach1DecodeAlgoSpatial);
+        this.#module.setDecodeAlgoType(this.#module.Mach1DecodeAlgoType.Mach1DecodeAlgoSpatial_8);
         this.#module.setFilterSpeed(0.9);
       });
   }
